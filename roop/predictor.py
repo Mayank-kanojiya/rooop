@@ -7,13 +7,6 @@ from roop.typing import Frame
 MAX_PROBABILITY = 0.85
 
 
-PREDICTOR = None
-
-def clear_predictor() -> None:
-    global PREDICTOR
-    PREDICTOR = None
-
-
 def predict_frame(target_frame: Frame) -> bool:
     return False
 
