@@ -16,7 +16,7 @@ def get_face_analyser() -> Any:
     with THREAD_LOCK:
         if FACE_ANALYSER is None:
             FACE_ANALYSER = insightface.app.FaceAnalysis(name='buffalo_l', providers=roop.globals.execution_providers)
-            FACE_ANALYSER.prepare(ctx_id=0)
+            FACE_ANALYSER.prepare(ctx_id=0, det_size=(640, 640))
     return FACE_ANALYSER
 
 
@@ -26,17 +26,15 @@ def clear_face_analyser() -> Any:
     FACE_ANALYSER = None
 
 
-def get_one_face(frame: Frame, position: int = 0) -> Optional[Face]:
-    many_faces = get_many_faces(frame)
-    if many_faces:
-        try:
-            return many_faces[position]
-        except IndexError:
-            return many_faces[-1]
-    return None
+def get_one_face(frame: Frame) -> Any:
+    face = get_face_analyser().get(frame)
+    try:
+        return min(face, key=lambda x: x.bbox[0])
+    except ValueError:
+        return None
 
 
-def get_many_faces(frame: Frame) -> Optional[List[Face]]:
+def get_many_faces(frame: Frame) -> Any:
     try:
         return get_face_analyser().get(frame)
     except ValueError:
